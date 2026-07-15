@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    tools {
+	jdk 'Java21'
+	maven 'maven'
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                echo 'Cleaning...'
+                sh 'mvn clean'
+            }
+        }
+        stage('Compile') {
+            steps {
+                echo 'Compileing...'
+                sh 'mvn compile'
+            }
+        }
+        stage('Package') {
+            steps {
+                echo 'Package...'
+                sh 'mvn package'
+            }
+        }
+	 stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+                sh 'mvn install tomcat7:deploy'
+            }
+        }
+
+    }
+}
