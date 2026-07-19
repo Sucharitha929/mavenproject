@@ -40,7 +40,7 @@ pipeline {
     }
 
     environment {
-        TOMCAT_URL = 'http://54.161.22.157:8080/manager/html'
+        TOMCAT_URL = 'http://54.161.22.157:8080/manager/text'
     }
 
     stages {
