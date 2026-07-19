@@ -34,6 +34,10 @@
 }*/
 pipeline {
     agent none // Defined at stage level for multi-agent execution
+	tools {
+	jdk 'Java21'
+	maven 'maven'
+    }
 
     environment {
         TOMCAT_URL = 'http://54.161.22.157:8080/manager/html'
