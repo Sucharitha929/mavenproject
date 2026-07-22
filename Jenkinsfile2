@@ -39,7 +39,7 @@ pipeline {
                         url: 'http://54.163.222.85:8080'
                     )
                 ],
-                contextPath: 'myapp',
+                contextPath: 'Newapp',
                 war: '**/*.war'
             }
         }
