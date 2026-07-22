@@ -1,0 +1,43 @@
+pipeline {
+    agent { label 'agent1' }
+
+    tools {
+        jdk 'Java21'
+        maven 'maven'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'githubaccess',
+                    url: 'https://github.com/Sucharitha929/mavenproject.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+
+        stage('Archive WAR') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            build job: 'agent2 job', wait: false
+        }
+    }
+}

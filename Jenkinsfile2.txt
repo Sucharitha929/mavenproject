@@ -1,0 +1,64 @@
+pipeline {
+    agent { label 'agent2' }
+
+    tools {
+        jdk 'Java21'
+        maven 'maven'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'githubaccess',
+                    url: 'https://github.com/Sucharitha929/mavenproject.git'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Copy WAR') {
+            steps {
+                copyArtifacts(
+                    projectName: 'agent1 job',
+                    selector: lastSuccessful()
+                )
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                deploy adapters: [
+                    tomcat9(
+                        credentialsId: 'tomcat',
+                        url: 'http://54.163.222.85:8080'
+                    )
+                ],
+                contextPath: 'myapp',
+                war: '**/*.war'
+            }
+        }
+    }
+
+    post {
+        always {
+            withCredentials([usernamePassword(credentialsId: 'smtp-creds', passwordVariable: 'SMTP_PASS', usernameVariable: 'SMTP_USER')]) {
+                mail to: 'dsucharitha.99@gmail.com',
+                     subject: "Jenkins Build ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
+                     body: """Job Name: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build Status: ${currentBuild.currentResult}
+Build Duration: ${currentBuild.durationString}
+Build URL: ${env.BUILD_URL}""",
+                     replyTo: 'dsucharitha.99@gmail.com',
+                     from: "${SMTP_USER}"
+            }
+        }
+    }
+
+}
